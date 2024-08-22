@@ -18,14 +18,14 @@ frontend-build:
 frontend-prod:
 	cd frontend && pnpm run start
 
-docker:
-	docker compose up
+backend-build:
+	cd backend && go build && ./backend
 
 backend-dev:
 	cd backend && air
 
 backend-prod:
-	cd backend && go build && ./backend
+	cd backend && ./backend
 
 .SILENT:
 .PHONY: command

@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -15,33 +17,25 @@ type Users struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-// func UserExist(db *sql.DB, username string) bool {
-// 	sql := "SELECT username FROM users  WHERE username = ?"
+type UsersCollection struct {
+	Username string
+	Password string
+}
 
-// 	// Create a prepared SQL statement
-// 	stmt, err := db.Prepare(sql)
-// 	// Exit if we get an error
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	// Make sure to cleanup after the program exits
-// 	defer stmt.Close()
+func CheckUser(db *sql.DB, username string) (res UsersCollection, error bool) {
+	sql := "SELECT username, password from users where username = ?"
 
-// 	// Replace the '?' in our prepared statement with 'name'
-// 	result, err2 := stmt.Exec(username)
-// 	// Exit if we get an error
-// 	if err2 != nil {
-// 		panic(err2)
-// 	}
-// 	exist, _ := result.LastInsertId()
-// 	if exist != 0 {
-// 		return true
-// 	}
+	// Query for a value based on a single row.
+	if err := db.QueryRow(sql, username).Scan(&res.Username, &res.Password); err != nil {
+		log.Println(fmt.Printf("Error fetch data: %v", err.Error()))
+		return res, false
+	}
+	fmt.Println(res)
+	return res, true
+}
 
-// 	return false
-// }
+func CreateUser(db *sql.DB, username string, password string) bool {
 
-func CreateUser(db *sql.DB, username string, password string) (int64, error) {
 	sql := `
 	INSERT INTO
 		users (username, password)
@@ -64,11 +58,9 @@ func CreateUser(db *sql.DB, username string, password string) (int64, error) {
 
 	defer stmt.Close()
 
-	result, err2 := stmt.Exec(username, password, username)
-	// Exit if we get an error
-	if err2 != nil {
-		panic(err2)
+	if _, err := stmt.Exec(username, password, username); err != nil {
+		panic(err)
 	}
 
-	return result.LastInsertId()
+	return false
 }

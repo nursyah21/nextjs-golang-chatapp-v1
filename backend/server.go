@@ -19,7 +19,7 @@ func main() {
 	db := initDb("database.db")
 	migrateDb(db)
 
-	e.POST("/login", handlers.Login)
+	e.POST("/login", handlers.Login(db))
 	e.POST("/register", handlers.Register(db))
 
 	// e.GET("/tasks", handlers.GetTasks(db))
