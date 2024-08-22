@@ -3,6 +3,7 @@ command:
 	echo backend-dev
 	echo frontend-prod
 	echo backend-prod
+	echo backend-build
 	echo create-db
 
 create-db:
@@ -11,8 +12,11 @@ create-db:
 frontend-dev:
 	cd frontend && pnpm run dev
 
-frontend-prod:
+frontend-build:
 	cd frontend && time pnpm run build && pnpm run start
+
+frontend-prod:
+	cd frontend && pnpm run start
 
 docker:
 	docker compose up

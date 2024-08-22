@@ -39,8 +39,8 @@
     - username #string max 60 unique
     - password #string max 255
     - avatar #string max 255
-    - createdAt #date
-    - updatedAt #date
+    - createdAt #datetime
+    - updatedAt #datetime
 
 - messages
     - id #int id
@@ -48,13 +48,15 @@
     - receiven_id #int f users_id
     - message #string max 512
     - file_link #string max 255
-    - createdAt #date
-    - updatedAt #date
+    - createdAt #datetime
+    - updatedAt #datetime
 
-- refresh_token
+- refresh_tokens
     - id #int id
     - user_id #int f id
     - token #string max 255
+    - createdAt #datetime
+    - updatedAt #datetime
 
 ## reference
 - [nextjs](https://nextjs.org/)
