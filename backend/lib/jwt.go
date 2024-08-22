@@ -9,10 +9,9 @@ import (
 type User struct {
 	Id       int
 	Username string
-	// Kind string
 }
 
-type jwtCustomClaims struct {
+type JwtCustomClaims struct {
 	Id       int    `json:"id"`
 	Username string `json:"username"`
 	jwt.RegisteredClaims
@@ -20,7 +19,7 @@ type jwtCustomClaims struct {
 
 func CreateToken(id int, username string) (string, error) {
 
-	claims := &jwtCustomClaims{
+	claims := &JwtCustomClaims{
 		id,
 		username,
 		jwt.RegisteredClaims{
@@ -28,7 +27,7 @@ func CreateToken(id int, username string) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte("mysecret"))
+	t, err := token.SignedString([]byte(SECRET_JWT))
 
 	if err != nil {
 		return "", err
