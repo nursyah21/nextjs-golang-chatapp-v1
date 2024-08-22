@@ -18,19 +18,20 @@ type Users struct {
 }
 
 type UsersCollection struct {
+	Id       int
 	Username string
 	Password string
 }
 
-func CheckUser(db *sql.DB, username string) (res UsersCollection, error bool) {
-	sql := "SELECT username, password from users where username = ?"
+func CheckUser(db *sql.DB, username string) (res UsersCollection, exist bool) {
+	sql := "SELECT id, username, password from users where username = ?"
 
 	// Query for a value based on a single row.
-	if err := db.QueryRow(sql, username).Scan(&res.Username, &res.Password); err != nil {
+	if err := db.QueryRow(sql, username).Scan(&res.Id, &res.Username, &res.Password); err != nil {
 		log.Println(fmt.Printf("Error fetch data: %v", err.Error()))
 		return res, false
 	}
-	fmt.Println(res)
+
 	return res, true
 }
 

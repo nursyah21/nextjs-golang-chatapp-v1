@@ -15,22 +15,28 @@ func Login(db *sql.DB) echo.HandlerFunc {
 		var user models.Users
 		c.Bind(&user)
 
-		// encPassword, err := generatePassword(user.Password)
-		// if err != nil {
-		// 	return c.String(http.StatusBadRequest, "error create account")
-		// }
-
-		res, err := models.CheckUser(db, user.Username)
-		if err {
+		res, exist := models.CheckUser(db, user.Username)
+		if !exist {
 			return c.String(http.StatusOK, fmt.Sprintf("user: %v  not exist", res.Username))
 		}
+
+		match, _ := lib.ComparePasswordAndHash(user.Password, res.Password)
+		if !match {
+			return c.String(http.StatusBadRequest, "wrong password")
+		}
+
+		t, _ := lib.CreateToken(res.Id, res.Username)
+
+		return c.JSON(http.StatusOK, echo.Map{
+			"token": t,
+		})
 
 		// if err2 != nil {
 		// 	return c.String(http.StatusBadRequest, "error create account")
 		// }
 
 		// var i models.UsersCollection
-		return c.String(http.StatusOK, fmt.Sprintf("user: %v, password: %v", res.Username, res.Password))
+		// return c.String(http.StatusOK, fmt.Sprintf("user: %v, password: %v", res.Username, res.Password))
 	}
 }
 
