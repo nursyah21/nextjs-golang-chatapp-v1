@@ -3,14 +3,23 @@ package handlers
 import (
 	"backend/lib"
 	"backend/models"
-	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
-func Login(db *sql.DB) echo.HandlerFunc {
+func Logout(c echo.Context) error {
+	data := c.Request().Header.Values("Authorization")
+	token := strings.Split(strings.Join(data, ","), " ")[1]
+	models.DeleteToken(lib.DB, token)
+
+	return c.String(http.StatusOK, token)
+}
+
+func Login() echo.HandlerFunc {
+	db := lib.DB
 	return func(c echo.Context) error {
 		var user models.Users
 		c.Bind(&user)
@@ -27,20 +36,17 @@ func Login(db *sql.DB) echo.HandlerFunc {
 
 		t, _ := lib.CreateToken(res.Id, res.Username)
 
+		models.StoreToken(db, res.Id, t)
+
 		return c.JSON(http.StatusOK, echo.Map{
 			"token": t,
 		})
-
-		// if err2 != nil {
-		// 	return c.String(http.StatusBadRequest, "error create account")
-		// }
-
-		// var i models.UsersCollection
-		// return c.String(http.StatusOK, fmt.Sprintf("user: %v, password: %v", res.Username, res.Password))
 	}
 }
 
-func Register(db *sql.DB) echo.HandlerFunc {
+func Register() echo.HandlerFunc {
+	db := lib.DB
+
 	return func(c echo.Context) error {
 		var user models.Users
 		c.Bind(&user)

@@ -4,6 +4,10 @@ import (
 	"database/sql"
 )
 
+var (
+	DB = InitDb()
+)
+
 func InitDb() *sql.DB {
 	db, err := sql.Open("sqlite3", DATABASE)
 	if err != nil {
