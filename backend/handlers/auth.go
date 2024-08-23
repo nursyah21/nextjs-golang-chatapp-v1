@@ -19,14 +19,14 @@ func Logout(c echo.Context) error {
 }
 
 func Login() echo.HandlerFunc {
-	db := lib.DB
 	return func(c echo.Context) error {
+		db := lib.DB
 		var user models.Users
 		c.Bind(&user)
 
 		res, exist := models.CheckUser(db, user.Username)
 		if !exist {
-			return c.String(http.StatusOK, fmt.Sprintf("user: %v  not exist", res.Username))
+			return c.String(http.StatusBadRequest, fmt.Sprintf("user %v  not exist", user.Username))
 		}
 
 		match, _ := lib.ComparePasswordAndHash(user.Password, res.Password)
@@ -45,9 +45,8 @@ func Login() echo.HandlerFunc {
 }
 
 func Register() echo.HandlerFunc {
-	db := lib.DB
-
 	return func(c echo.Context) error {
+		db := lib.DB
 		var user models.Users
 		c.Bind(&user)
 

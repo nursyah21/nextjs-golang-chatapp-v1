@@ -11,8 +11,6 @@ import (
 )
 
 func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
-	// return func (next echo.HandlerFunc) echo.HandlerFunc {
-	// }
 	return func(c echo.Context) error {
 		data := c.Request().Header.Values("Authorization")
 		token := strings.Split(strings.Join(data, ","), " ")[1]
@@ -22,6 +20,8 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			log.Println(exist)
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid or expired jwt")
 		}
+
+		c.Response().Header().Set("x-token", token)
 
 		return next(c)
 	}

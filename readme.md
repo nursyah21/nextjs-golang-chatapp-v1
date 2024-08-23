@@ -27,11 +27,15 @@
 - delete message [delete]
 
 - edit profile [put]
-- send image avatar [post]
-- delete image avatar [delete]
-- read profile [post]
+- read profile [get]
+
+- read file [get]
+- send file [post]
+- delete file [delete]
 
 - search user [get]
+
+- websocket message [get]
 
 ## SCHEMA DATABASE
 - users
@@ -45,9 +49,16 @@
 - messages
     - id #int id
     - send_id #int f users_id
-    - receiven_id #int f users_id
+    - received_id #int f users_id
     - message #string max 512
     - file_link #string max 255
+    - createdAt #datetime
+    - updatedAt #datetime
+
+- files
+    - id #int id
+    - owner_id #int f users_id
+    - file_link #string max 255    
     - createdAt #datetime
     - updatedAt #datetime
 

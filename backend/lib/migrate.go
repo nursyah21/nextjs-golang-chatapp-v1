@@ -37,8 +37,17 @@ func migrateDb(db *sql.DB) {
 	CREATE TABLE IF NOT EXISTS messages (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		send_id INTEGER NOT NULL REFERENCES users (id),
-		receive_id INTEGER NOT NULL REFERENCES users (id),
+		received_id INTEGER NOT NULL REFERENCES users (id),
 		message VARCHAR(512) NOT NULL,
+		file_link VARCHAR(255),
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
+	-- Create the files table
+	CREATE TABLE IF NOT EXISTS files (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		owner_id INTEGER NOT NULL REFERENCES users (id),
 		file_link VARCHAR(255),
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -67,6 +76,15 @@ func migrateDb(db *sql.DB) {
 	WHEN old.updatedAt <> current_timestamp
 	BEGIN
 		UPDATE messages
+		SET updatedAt = CURRENT_TIMESTAMP
+		WHERE id = OLD.id;
+	END;
+
+	CREATE TRIGGER IF NOT EXISTS update_files_updated_at
+	AFTER UPDATE ON files
+	WHEN old.updatedAt <> current_timestamp
+	BEGIN
+		UPDATE files
 		SET updatedAt = CURRENT_TIMESTAMP
 		WHERE id = OLD.id;
 	END;

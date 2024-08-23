@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -34,4 +35,19 @@ func CreateToken(id int, username string) (string, error) {
 	}
 
 	return t, nil
+}
+
+func ParseToken(tokenString string) (any, error) {
+
+	token, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_JWT), nil
+	})
+
+	if err != nil {
+		return "", err
+	} else if claims, ok := token.Claims.(*JwtCustomClaims); ok {
+		return claims.Id, nil
+	} else {
+		return "", errors.New("unknown claims type, cannot proceed")
+	}
 }

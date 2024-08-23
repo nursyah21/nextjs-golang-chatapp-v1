@@ -18,26 +18,38 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
-	// db := lib.InitDb()
-
-	e.POST("/login", handlers.Login())
-	e.POST("/register", handlers.Register())
 	r := e.Group("/restricted")
 
-	// Configure middleware with the custom claims type
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(lib.JwtCustomClaims)
 		},
 		SigningKey: []byte(lib.SECRET_JWT),
 	}
-
 	r.Use(echojwt.WithConfig(config))
 	r.Use(handlers.Middleware)
 
-	// r.GET("", restricted)
+	w := r.Group("/ws")
+
+	e.POST("/login", handlers.Login())
+	e.POST("/register", handlers.Register())
 	r.DELETE("/logout", handlers.Logout)
+
+	r.GET("/message", handlers.ReadMessage)
+	r.POST("/message", handlers.SendMessage)
+	r.PUT("/message", handlers.EditMessage)
+	r.DELETE("/message", handlers.DeleteFile)
+
+	r.PUT("/profile", handlers.EditProfile)
+	r.GET("/profile", handlers.ReadProfile)
+
+	r.GET("/files", handlers.ReadFile)
+	r.POST("/files", handlers.SendFile)
+	r.DELETE("/files", handlers.DeleteFile)
+
+	r.GET("/user/:id", handlers.SearchUser)
+
+	w.GET("/message", handlers.WebSocketMessage)
 
 	e.Logger.Fatal(e.Start(":5000"))
 }
